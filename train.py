@@ -9,6 +9,8 @@ filepath = "data/robotex5_clustered.csv"
 df = pd.read_csv(filepath)
 
 # Extract features from 'start_time'
+df["start_time"] = pd.to_datetime(df["start_time"])
+df = df.sort_values("start_time")
 df["hour"] = df["start_time"].dt.hour
 df["day_of_week"] = df["start_time"].dt.dayofweek  # Monday=0, Sunday=6
 df["is_weekend"] = df["day_of_week"].apply(lambda x: 1 if x >= 5 else 0)
@@ -24,11 +26,15 @@ aggregated_data = (
 )
 
 # Prepare the feature matrix and target vector
+# 5 zones x 24 hours x 7 days = 840 data points
 X = aggregated_data[["zone", "hour", "day_of_week"]]
+# TODO: normalize the data?
 y = aggregated_data["num_rides"]
 
 X_encoded = pd.get_dummies(X, columns=["zone"])
+# TODO: get dummies for hours and days of the week?
 
+# TODO: should split the data before aggregating, otherwise we loose the information about some of the zones
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
     X_encoded, y, test_size=0.3, random_state=42
@@ -51,7 +57,7 @@ print(f"R^2 Score: {r2:.2f}")
 # Save the model
 import joblib
 
-joblib.dump(model, "demand_prediction_model.pkl")
+joblib.dump(model, "model.pkl")
 print("Model trained and saved.")
 
 # TODO: find a way to visualize  model's performance
@@ -63,3 +69,4 @@ print("Model trained and saved.")
 # plt.show()
 
 # TODO: there is also ride_value column in the data, maybe we can use it to predict the average ride value
+# TODO: plot zones and their most popular hours

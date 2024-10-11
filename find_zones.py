@@ -35,3 +35,5 @@ plt.xlabel("Longitude")
 plt.ylabel("Latitude")
 plt.legend()
 plt.savefig("spatial_clusters.png")
+
+# TODO: train/test split
