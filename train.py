@@ -6,8 +6,15 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-filepath = "data/robotex5_clustered.csv"
-df = pd.read_csv(filepath)
+# Load the ride data with zones
+df = pd.read_csv("data/robotex5_clustered.csv")
+
+# Load the cluster centers with colors
+cluster_centers = pd.read_csv("data/cluster_centers.csv")
+
+# Create a color map from the cluster_centers file
+zone_colors = cluster_centers.set_index("zone")["color"].to_dict()
+
 
 # Extract features from 'start_time'
 df["start_time"] = pd.to_datetime(df["start_time"])
@@ -34,12 +41,16 @@ rides_by_hour_zone = (
 )
 
 
-# TODO: use same colors
 # Plot 1: Most popular time of day per zone (number of rides by hour)
 plt.figure(figsize=(12, 6))
-sns.lineplot(
-    data=rides_by_hour_zone, x="hour", y="num_rides", hue="zone", palette="Set1"
-)
+for zone in rides_by_hour_zone["zone"].unique():
+    zone_data = rides_by_hour_zone[rides_by_hour_zone["zone"] == zone]
+    plt.plot(
+        zone_data["hour"],
+        zone_data["num_rides"],
+        label=f"Zone {zone}",
+        color=zone_colors[zone],
+    )
 plt.title("Most Popular Time of Day per Zone (Number of Rides)")
 plt.xlabel("Hour of the Day")
 plt.ylabel("Number of Rides")
@@ -49,9 +60,14 @@ plt.savefig("most_popular_time_of_day.png")
 
 # Plot 2: Average ride value by hour and zone
 plt.figure(figsize=(12, 6))
-sns.lineplot(
-    data=rides_by_hour_zone, x="hour", y="avg_ride_value", hue="zone", palette="Set2"
-)
+for zone in rides_by_hour_zone["zone"].unique():
+    zone_data = rides_by_hour_zone[rides_by_hour_zone["zone"] == zone]
+    plt.plot(
+        zone_data["hour"],
+        zone_data["avg_ride_value"],
+        label=f"Zone {zone}",
+        color=zone_colors[zone],
+    )
 plt.title("Average Ride Value by Hour and Zone")
 plt.xlabel("Hour of the Day")
 plt.ylabel("Average Ride Value (currency)")
