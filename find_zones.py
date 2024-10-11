@@ -13,6 +13,7 @@ df = df.sort_values("start_time")
 # Use KMeans to cluster 'start_lat' and 'start_lng' into spatial zones
 kmeans = KMeans(n_clusters=5, random_state=42)  # Assuming 5 clusters for simplicity
 df["zone"] = kmeans.fit_predict(df[["start_lat", "start_lng"]])
+df.to_csv("robotex5_clustered.csv", index=False)
 
 # Save the clusters and centers to CSV for future use
 cluster_centers = kmeans.cluster_centers_
