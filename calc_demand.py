@@ -32,6 +32,7 @@ aggregated_data = (
     )
     .reset_index()
 )
+aggregated_data.to_csv("aggregated_demand.csv", index=False)
 
 # Aggregating number of rides by zone and hour
 rides_by_hour_zone = (
